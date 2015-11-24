@@ -3,31 +3,7 @@ if(!isset($_SESSION['login']))
 {
 	session_start();
 }
-if(isset($_POST['kirimforum']))
-{
-	include '../koneksi.php';
-	$id_anggota = $_SESSION['id_anggota']; 
-	$isi = mysql_real_escape_string ($_POST['isi']);
-	$waktu = time();
-	
-	$tipe = 1;
-	$id_materi = 0; 
-	//jika balas komentar
-	if(isset($_GET['id']))
-	{
-		$tipe = 0;
-		$id_materi = $_GET['id'];
-	}
-	
-	$sql = "insert into tbkomunikasi set 	tipe=$tipe,
-										 	judul='$_POST[judul]',
-											id_materi ='$id_materi',
-											id_anggota='$id_anggota',
-											waktu='$waktu',
-											isi='$isi'";
-							
-	mysql_query($sql);
-}
+
 
 //jika ada aksi
 if(isset($_GET['aksi']))
@@ -52,28 +28,42 @@ else
 ?>
 <html>
 <head>
-<link href="../plugin/bootstrap.min.css" type="text/css" rel="stylesheet">    
-<link href="../plugin/bootstrap-themes.css" type="text/css" rel="stylesheet">    
+<link href="../plugin/bootstrap.min.css" type="text/css" rel="stylesheet">
+<link href="../plugin/bootstrap-themes.css" type="text/css" rel="stylesheet">
 </head>
 <body>
 <div id="comments">
-	<div id="respond">
-                       
-<?php
+  <div id="respond">
+  <?php
 $judul_input = 'Input Forum Baru';
 if(isset($_GET['id']))
 {
 	$judul_input = 'Balas Forum';
 }
 ?>
-<p><h3><?php echo $judul_input?></h3></p>
-<form method="post" action="" id="commentform">
-	<div class="row">
-    	<p class="comment-form-author span3">
-    	<label for="author">Judul</label>
-        	<input name="judul" type="text" value="" style="height:30px"/>
-        </p>
-	<?php
+  <p>
+  <h3><?php echo $judul_input?></h3>
+  </p>
+  <form method="post" action="../proses.php" id="commentform">
+    <div class="row">
+      <p class="comment-form-author span3">
+        <?php 	
+	if(!isset($_GET['id']))
+	{
+		?>
+        <label for="author">Judul</label>
+        <input name="judul" type="text" value="" style="height:30px"/>
+        <?php
+	}
+	else
+	{
+	?>
+        <input type="hidden" name="id" value="<?php echo $_GET['id']?>">
+        <?php
+	}
+	?>
+      </p>
+      <?php
 	if(!empty($_SESSION['kutipan']))
 	{
 		$balasan_anggota = $fungsi->idanggota_to_username($datakutipan['id_anggota'])['nama_lengkap'];
@@ -89,20 +79,18 @@ if(isset($_GET['id']))
 			$isi = null;
 		}
 		?>
-		<p class="comment-form-comment span9">
-        	<label for="">Komentar</label>
-            <textarea id="comment" name="isi" cols="45" rows="8" style="height:200px; width:400px"><?php echo $isi?></textarea>
+      <p class="comment-form-comment span9">
+        <label for="">Komentar</label>
+        <textarea id="comment" name="isi" cols="45" rows="8" style="height:200px; width:400px"><?php echo $isi?></textarea>
+      </p>
+      <div class="span9">
+        <p class="form-submit">
+          <input type="submit" name="kirimforum" value="kirim">
         </p>
-        <div class="span9">
-         	<p class="form-submit">
-            	<input type="submit" name="kirimforum" value="kirim">
-            </p>
-        </div>
-        </div>
-		
-
-	</div>
-</form>
+      </div>
+    </div>
+    </div>
+  </form>
 </div>
 </div>
 </body>
